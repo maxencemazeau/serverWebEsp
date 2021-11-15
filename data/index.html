@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+ 
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+
+</head>
+
+<body>
+
+
+    <!-- <p>Cliquez ici </p>  
+    <input type = "button" onclick = "getFromESP_getNom()" value = "Afficher">   -->
+
+<h1> Type de Bois</h1>
+<FORM class='bois'>
+    <SELECT name="nom" size="1" class="choix">
+    <OPTION>Erable
+    <OPTION>Boulot
+    <OPTION>Chene
+    </SELECT>
+</FORM>
+
+
+<h1>Caracteristiques
+</h1>
+
+
+<h2> 
+    Bois : Erable
+<br> 
+    Type : dur
+<br>
+    Origine : US
+<br> 
+    Temps de sechage: 20 secondes
+<br> 
+    Temperature min : 25 Celcius   
+</h2>
+
+<h3> Controle du four de sechage </h3>
+
+<div class="center">
+    <p> Temperature du Four </p>
+    <br>
+    <p class="celcius" id="temp"></p>
+    <br>
+    <p class="box">Demarrage du four</p>
+</div>
+</body>
+<script type = "text/javascript" src="script.js"> </script>
+<script> getFromESP_getNom(); 
+         getFromEsp_TemperatureSensor();</script>
+
+</html>

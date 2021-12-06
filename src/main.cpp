@@ -58,26 +58,40 @@
 #include <ArduinoJson.h>
 
 #include "myFunctions.cpp" //fonctions utilitaires
+#include "MyOled.h"
 
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
 #include "Adafruit_NeoPixel.h"
 #include <Wire.h>
 #include "MyOledView.h" //Fonction Oled
-#include "MyOled.h"
+#include "MyOledViewInitialisation.h"
+#include "MyOledViewWifiAp.h"
+
 #define Protocole I2C, Adresse : 0x3C (défaut)
 #define GPIO21 : SDA
 #define GPIO22 : SCL
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 32
-#define OLED_RESET 4
-MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+#define OLED_I2C_ADDRESS 0x3C // Adresse I2C de l'écran Oled
 
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET 4
+
+MyOled *myOled = NULL;
+MyOledViewInitialisation *viewIni = NULL;
+
+// MyOledViewWorkingWifiAp *viewWifi = NULL;
 
 #include <HTTPClient.h>
 #include <WiFiManager.h>
 WiFiManager wm;
 #define WEBSERVER_H
+
+
+#include "MyButton.h"
+MyButton *myButtonAction = NULL;
+MyButton *myButtonReset = NULL;
 
 //Pour la gestion du serveur ESP32
 #include "MyServer.h"
@@ -92,12 +106,6 @@ String ssIDRandom;
 #define DHTPIN  15   // Pin utilisée par le senseur DHT11 / DHT22
 #define DHTTYPE DHT22  //Le type de senseur utilisé (mais ce serait mieux d'avoir des DHT22 pour plus de précision)
 TemperatureStub *temperatureStub = NULL;
-
-
-//Pour la gestion des boutons
-#include "MyButton.h"
-MyButton *myButtonAction = NULL;
-MyButton *myButtonReset = NULL;
 
 //Définition des trois leds de statut
 #define GPIO_PIN_LED_LOCK_ROUGE         12 //GPIO12
@@ -134,14 +142,49 @@ std::string CallBackMessageListener(string message) {
     return(temp.c_str()); }
     
 
-    }
+std::string result = "";
+return result;
+}
+
 
 
 void setup() { 
     Serial.begin(9600);
     delay(100);
 
-   
+// Affichage sur le OLED du MyOledInitialisation
+
+   myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+   myOled->init(OLED_I2C_ADDRESS, true);
+   viewIni = new MyOledViewInitialisation();
+
+
+    viewIni->setNomDuSysteme("SAC System");
+    viewIni->setIdDuSysteme("1234");
+    viewIni->setSensibiliteBoutonAction("????");
+    viewIni->setSensibiliteBoutonReset("????");
+
+    myOled->displayView(viewIni);
+
+
+   //Gestion des boutons
+    myButtonAction = new MyButton();        //Pour lire le bouton actions
+    myButtonAction->init(T8);
+    int sensibilisationButtonAction = myButtonAction->autoSensibilisation();
+
+    myButtonReset = new MyButton();         //Pour lire le bouton hard reset
+    myButtonReset->init(T9);
+    int sensibilisationButtonReset = myButtonReset->autoSensibilisation();
+
+   Serial.print("sensibilisationButtonAction : "); Serial.println(sensibilisationButtonAction);
+   Serial.print("sensibilisationButtonReset : "); Serial.println(sensibilisationButtonReset);
+
+    viewIni->setSensibiliteBoutonAction(String(sensibilisationButtonAction).c_str());
+    viewIni->setSensibiliteBoutonReset(String(sensibilisationButtonReset).c_str());
+
+    myOled->displayView(viewIni);
+
+
  //Connection au WifiManager
     String ssIDRandom, PASSRandom;
     String stringRandom;
@@ -164,7 +207,20 @@ char strToPrint[128];
     else {
         Serial.println("Connexion Établie.");
         }
-    
+
+
+//Affichage sur le OLED de MyOledWifi
+
+    // myOledWifi = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+    // myOledWifi->init(OLED_I2C_ADDRESS, true);
+    // viewWifi = new MyOledViewWifiAp(); 
+
+    // viewWifi->setNomDuSysteme("SAC System");
+    // viewWifi->setSsIDDuSysteme(String(ssIDRandom));
+    // viewWifi->setpassDuSysteme(String(PASSRandom));
+
+    // myOledWifi->displayView(viewWifi);
+
 
     // ----------- Routes du serveur ----------------
     myServer = new MyServer(80);
@@ -174,18 +230,6 @@ char strToPrint[128];
     //Initiation pour la lecture de la température
     temperatureStub = new TemperatureStub;
     temperatureStub->init(DHTPIN, DHTTYPE); //Pin 15 et Type DHT11
-
-    //Gestion des boutons
-    myButtonAction = new MyButton();        //Pour lire le bouton actions
-    myButtonAction->init(T8);
-    int sensibilisationButtonAction = myButtonAction->autoSensibilisation();
-
-    myButtonReset = new MyButton();         //Pour lire le bouton hard reset
-    myButtonReset->init(T9);
-    int sensibilisationButtonReset = myButtonReset->autoSensibilisation();
- 
-   Serial.print("sensibilisationButtonAction : "); Serial.println(sensibilisationButtonAction);
-   Serial.print("sensibilisationButtonReset : "); Serial.println(sensibilisationButtonReset);
 
     //Initialisation des LED statuts
     pinMode(GPIO_PIN_LED_LOCK_ROUGE,OUTPUT);
@@ -202,50 +246,9 @@ char strToPrint[128];
 
 
 void loop() {
-    //Gestion de la température
-     float t = temperatureStub->getTemperature();
     
-
-    //Gestion du bouton Action et des LED
-    int buttonAction = myButtonAction->checkMyButton();
-    if(buttonAction > 2)  {  //Si appuyé plus de 0.2 secondes
-        if(t < 25.0) { //Si température inférieur à 25 degré
-          Serial.println("Température inférieur à 25");
-          Serial.println(t);
-          digitalWrite(GPIO_PIN_LED_LOCK_ROUGE,LOW); //Allume la led 
-          delay(3000);
-          digitalWrite(GPIO_PIN_LED_LOCK_ROUGE,HIGH); //Eteint la led
-
-        } else if (t > 25) { //Si température supérieur à 25 degré
-            Serial.println("Température supérieur à 25");
-            Serial.println(t);
-
-          for( int i = 0; i<5 ; i++){ //Tant qeue i est inférieur à 5 la boucle est joué
-            digitalWrite(GPIO_PIN_LED_OK_GREEN,LOW);
-            delay(500);
-            digitalWrite(GPIO_PIN_LED_OK_GREEN,HIGH);
-            delay(500);
-             }
-        }
-    }
-    
-
-         //Gestion du bouton Reset
-    int buttonReset = myButtonReset->checkMyButton();
-     if(buttonReset > 300)  {  //Si appuyé plus de 30 secondes
-        Serial.println("Button Reset pressed\n");
-        //Le bouton hard reset a été appuyé
-        Serial.println("Button Hard reset pressed\n");
-        Serial.println("Suppression des réglages et redémarrage...\n");
-        }
-
-    delay(10);
-
-
     
   }
-
-
 
 
 

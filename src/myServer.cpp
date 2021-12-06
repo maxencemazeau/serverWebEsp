@@ -13,6 +13,7 @@ CallbackType MyServer::ptrToCallBackFunction = NULL;
 
 //Exemple pour appeler une fonction CallBack
 //if (ptrToCallBackFunction) (*ptrToCallBackFunction)(stringToSend); 
+
 void MyServer::initCallback(CallbackType callback) {
     ptrToCallBackFunction = callback;
     }
@@ -27,12 +28,14 @@ void MyServer::initAllRoutes() {
         }
 
     //Route initiale (page html)
+    
     this->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("Route du l'html");
         request->send(SPIFFS, "/index.html", "text/html");
         });
 
     //Route du script JavaScript
+
     this->on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         Serial.println("Route du scrip js");
         request->send(SPIFFS, "/script.js", "text/javascript");
@@ -76,37 +79,13 @@ void MyServer::initAllRoutes() {
         Serial.println("getAllWoodOptions... ");
 
         HTTPClient http;
-        String woodApiRestAddress = "http://localhost:8080/bois";
+        String woodApiRestAddress = "http://172.16.210.74:8080/bois";
         http.begin(woodApiRestAddress);
         http.GET();
         String response = http.getString();
-
-        String tempToSend;
-        StaticJsonDocument<2048> doc;
-        deserializeJson(doc, response);
-        JsonObject obj1 = doc.as<JsonObject>();
-        std::string wood;
-        String  woodName;
-      
-        for (JsonPair kv1 : obj1) {
-            wood = kv1.key().c_str();
-            Serial.print("Element : ");Serial.println(wood.c_str());
-
-            JsonObject elem = obj1[wood];
-            woodName = elem["name"].as<String>();
-            if(tempToSend!="") tempToSend += "&";
-            tempToSend +=  String(wood.c_str()) + String("&") + String(woodName.c_str());
-           
-            Serial.print(woodName);Serial.print(" ");
-                          
-            //Pour parcourir les éléments de l'objet
-            //for (JsonPair kv2 : elem) {
-            //    Serial.print("   Sous element : ");Serial.print(kv2.key().c_str());
-            //    Serial.print("    :  ");Serial.println(kv2.value().as<char*>());
-            //    }
-            }
+        Serial.println(response);
+        request->send(200, "text/plain", response);
         
-        request->send(200, "text/plain", tempToSend);
     });
     
     this->begin();

@@ -7,10 +7,7 @@
 </head>
 
 <body>
-
-
-    <!-- <p>Cliquez ici </p>  
-    <input type = "button" onclick = "getFromESP_getNom()" value = "Afficher">   -->
+    <img alt="image" src="sac.png" width="300" height="200">
 
 <h1> Type de Bois</h1>
 
@@ -19,8 +16,7 @@
 
 
 
-<h1>Caracteristiques
-</h1>
+<h1>Caracteristiques</h1>
 
 <div>
 <h2> 
@@ -32,7 +28,7 @@
 <br> 
     Temps de sechage: <span id="tempsSechage"></span>
 <br> 
-    Temperature min : <span id="tempMin"></span>  
+    Temperature minimum : <span id="tempMin"></span>  
 </h2>
 </div>
 <h3> Controle du four de sechage </h3>
@@ -48,7 +44,7 @@
     <div class="ligne">
         <p class="bleu"><span id="nom2"></span></p>
         <p class="bleu"><span id="timer"></span>/<span id="tempsSechage2"></span> Temps de sechage(sec)</p>
-        <p class="bleu">(min: <span id="tempMin2"></span> Celsuis)</p>
+        <p class="bleu">(min: <span id="tempMin2"></span> Celsius)</p>
     <div class="right">
         <span class="cercleRouge"></span>
         <span class="cercleOrange"></span>
@@ -59,7 +55,7 @@
 </body>
 <script type = "text/javascript" src="script.js"> </script>
 <script>
-        // getFromEsp_TemperatureSensor();
+
          getFromESP_getAllWoodOptions();
          getInfoWood();
          demarrageFour();

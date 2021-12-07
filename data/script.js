@@ -1,36 +1,17 @@
-// const { addListener } = require("nodemon");
-
-
-// Fonction qui permet d'obtenir le nom du système (actualisée toutes les secondes)
-/*setInterval(function getNomSysteme(){
+/**
+    Class MyButton : Gestion de la température (senseur) STUB
+    @file MyButton.h 
+    author Maxence
+    version 1.3 04/12/21  
     
-    var xhttp = new XMLHttpRequest();
-
-    xhttp.onreadystatechange = function()
-    {
-        if(this.status == 200) {
-            document.getElementById("nomSysteme").value = this.responseText;
-        }
-    };
-
-    xhttp.open("GET", "lireNomDuSysteme", true);
-    xhttp.send();
-}, 10000); */
-
-function getFromESP_getNom () {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-    document.getElementById("nom").innerHTML = this.responseText;
-    
-    }
-    
-    };
-    xhttp.open("GET", "getNomEsp", true);
-    xhttp.send();
-    
-
-   }
+    Historique des versions   
+                            Versions  Date      Auteur      Description
+                            1.0      17/03/21   Ald         Première version de la classe
+                            1.1      22/10/21   Maxence     Ajout fonction température Sensor
+                            1.2      15/11/21   Maxence     Modification fonction température
+                            1.3      01/12/12   Maxence     Ajout de la fonction demarrageFour() et modification de la fonction getInfoWood()         
+        
+**/
 
    var boisChoisi;
    var temperature;

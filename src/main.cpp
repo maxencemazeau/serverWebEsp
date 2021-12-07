@@ -11,7 +11,7 @@
 
     Historique des versions
            Version    Date       Auteur       Description
-           1.1        21/08/15  Alain       Première version du logiciel
+           1.1        21/12/06  Samuel      Derniere version du logiciel 
 
     platform = espressif32
     board = esp32doit-devkit-v1
@@ -73,7 +73,7 @@
 #define GPIO22 : SCL
 #define OLED_I2C_ADDRESS 0x3C // Adresse I2C de l'écran Oled
 
-
+// Definition des dimensions de l'écran OLED
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET 4
@@ -88,6 +88,7 @@ MyOledViewInitialisation *viewIni = NULL;
 WiFiManager wm;
 #define WEBSERVER_H
 
+// Include de la classe MyButton.h
 
 #include "MyButton.h"
 MyButton *myButtonAction = NULL;
@@ -101,6 +102,8 @@ MyServer *myServer = NULL;
 const char *SSID = "SAC_";
 const char *PASSWORD = "sac_";
 String ssIDRandom;
+
+// Include de la classe du sensor, définition des pins utilisés par le sensor 
 
 #include "TemperatureStub.h"
 #define DHTPIN  15   // Pin utilisée par le senseur DHT11 / DHT22
@@ -182,7 +185,7 @@ void setup() {
     viewIni->setSensibiliteBoutonAction(String(sensibilisationButtonAction).c_str());
     viewIni->setSensibiliteBoutonReset(String(sensibilisationButtonReset).c_str());
 
-    myOled->displayView(viewIni);
+    myOled->displayView(viewIni);// Affichage de la vue viewIni
 
 
  //Connection au WifiManager
@@ -207,19 +210,6 @@ char strToPrint[128];
     else {
         Serial.println("Connexion Établie.");
         }
-
-
-//Affichage sur le OLED de MyOledWifi
-
-    // myOledWifi = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
-    // myOledWifi->init(OLED_I2C_ADDRESS, true);
-    // viewWifi = new MyOledViewWifiAp(); 
-
-    // viewWifi->setNomDuSysteme("SAC System");
-    // viewWifi->setSsIDDuSysteme(String(ssIDRandom));
-    // viewWifi->setpassDuSysteme(String(PASSRandom));
-
-    // myOledWifi->displayView(viewWifi);
 
 
     // ----------- Routes du serveur ----------------

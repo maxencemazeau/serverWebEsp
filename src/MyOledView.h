@@ -7,7 +7,7 @@
     Historique des versions   
                             Versions  Date      Auteur      Description
                             1.1      21/09/20   Ald         Première version de la classe
-                            
+                            1.2      04/05/21   Samuel GASSAMA  Ajout et définition des méthodes de la classe
                             
     platform = espressif32
     board = esp32doit-devkit-v1

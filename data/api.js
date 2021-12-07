@@ -9,7 +9,8 @@ const port = process.env.PORT || 8080
 
 
 app.listen(port, () => console.log('Listen on port ' + port))
-//Mysql
+
+//Configuration de la connexion à la base de données 
 
 app.use(function(req, res, next){
     res.locals.connection = mysql.createConnection({
@@ -17,7 +18,7 @@ app.use(function(req, res, next){
     host : 'localhost',
     user : 'root',
     password : '',
-    database : 'ProjetIntegration'
+    database : 'Bois'
 });
     res.locals.connection.connect();
     next();

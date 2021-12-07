@@ -7,7 +7,7 @@
 //     Historique des versions   
 //                             Versions  Date      Auteur      Description
 //                             1.1      11/08/21   Samuel       Première version de la classe
-                            
+//                             1.2      04/12/21   Samuel       Ajout et définitions des méthodes dans la classe 
                             
 //     platform = espressif32
 //     board = esp32doit-devkit-v1

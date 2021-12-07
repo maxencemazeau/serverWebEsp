@@ -8,7 +8,6 @@
                             Versions  Date      Auteur      Description
                             1.0      17/03/21   Ald         Première version de la classe
                             
-                            
     platform = espressif32
     board = esp32doit-devkit-v1
     framework = arduino
